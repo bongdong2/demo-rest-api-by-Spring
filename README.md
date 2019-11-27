@@ -12,3 +12,15 @@
 - json -> object문자열 : deserialization
   - spring.jackson.deserialization.fail-on-unknown-properties=true
       - deserialization 할 때, unknown-properties가 있으면 실패해라
+      
+### Event 생성 API 구현: Bad Request 처리하기
+- @Valid 사용하면 Entity 값들을 검증을 실행(Entity에는 @NotEmpty, @NotNull, @Min..)
+- 에러 발생시 @Valid 애노테이션을 사용한 객체 바로 다음의 Errors타입의 객체에 에러를 넣음
+```java
+@PostMapping
+    public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+        if(errors.hasErrors()){
+            return ResponseEntity.badRequest().build();
+        }
+}
+```
