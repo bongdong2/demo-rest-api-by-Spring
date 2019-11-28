@@ -54,12 +54,12 @@ public class EventControllerTests {
                     .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("id").exists())
+                .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("id").value(Matchers.not(100)))
-                .andExpect(MockMvcResultMatchers.jsonPath("free").value(Matchers.not(true)))
-                .andExpect(MockMvcResultMatchers.jsonPath("eventStatus").value(Matchers.not(EventStatus.DRAFT)));
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("offline").value(true))
+                .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.DRAFT)));
     }
 
     @Test

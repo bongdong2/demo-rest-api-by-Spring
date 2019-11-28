@@ -35,3 +35,6 @@
 - errors.reject -> global 
 - ErrorsSerializer.class 구현, @JsonComponent (스프링 부트 제공)
 - 테스트코드는 global error에 대응하도록 수정됨
+
+### Event 생성 API 구현: 비즈니스 로직 적용
+

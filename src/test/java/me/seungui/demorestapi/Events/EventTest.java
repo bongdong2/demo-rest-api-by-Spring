@@ -30,4 +30,67 @@ public class EventTest {
         assertThat(event.getName()).isEqualTo(name);
         assertThat(event.getDescription()).isEqualTo(description);
     }
+
+    @Test
+    public void testFree() {
+        // given
+        Event event = Event.builder()
+                .basePrice(0)
+                .maxPrice(0)
+                .build();
+
+        // when
+        event.update();
+
+        // then
+        assertThat(event.isFree()).isTrue();
+
+        // given
+        event = Event.builder()
+                .basePrice(100)
+                .maxPrice(0)
+                .build();
+
+        // when
+        event.update();
+
+        // then
+        assertThat(event.isFree()).isFalse();
+
+        // given
+        event = Event.builder()
+                .basePrice(0)
+                .maxPrice(100)
+                .build();
+
+        // when
+        event.update();
+
+        // then
+        assertThat(event.isFree()).isFalse();
+    }
+
+    @Test
+    public void testOffine() throws Exception {
+        //given 테스트 전의 상태
+        Event event = Event.builder()
+                .build();
+
+        //when 테스트 행위
+        event.update();
+
+        //than 테스트 검증
+        assertThat(event.isOffline()).isFalse();
+
+        //given 테스트 전의 상태
+        event = Event.builder()
+                .location("제주도 어딘가")
+                .build();
+
+        //when 테스트 행위
+        event.update();
+
+        //than 테스트 검증
+        assertThat(event.isOffline()).isTrue();
+    }
 }
