@@ -27,3 +27,11 @@
 
 - 잘못된 값이 들어간 경우(이벤트 종료일이 시작일보다 빠른경우 등) 처리
 - EventValidator
+
+### Event 생성 API 구현: Bad Request 응답 본문 만들기
+- erorr들을 body에 담아주는 작업 
+- custom JSON Serializer를 만들어 구현
+- errors.rejectValue -> field error
+- errors.reject -> global 
+- ErrorsSerializer.class 구현, @JsonComponent (스프링 부트 제공)
+- 테스트코드는 global error에 대응하도록 수정됨
