@@ -1,9 +1,13 @@
 package me.seungui.demorestapi.Events;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(JUnitParamsRunner.class)
 public class EventTest {
 
     @Test
@@ -31,66 +35,53 @@ public class EventTest {
         assertThat(event.getDescription()).isEqualTo(description);
     }
 
-    @Test
-    public void testFree() {
-        // given
-        Event event = Event.builder()
-                .basePrice(0)
-                .maxPrice(0)
-                .build();
 
-        // when
-        event.update();
-
-        // then
-        assertThat(event.isFree()).isTrue();
-
-        // given
-        event = Event.builder()
-                .basePrice(100)
-                .maxPrice(0)
-                .build();
-
-        // when
-        event.update();
-
-        // then
-        assertThat(event.isFree()).isFalse();
-
-        // given
-        event = Event.builder()
-                .basePrice(0)
-                .maxPrice(100)
-                .build();
-
-        // when
-        event.update();
-
-        // then
-        assertThat(event.isFree()).isFalse();
+    private Object[] parametersForTestFree() {
+        return new Object[] {
+                new Object[] {0, 0, true},
+                new Object[] {100, 0, false},
+                new Object[] {0, 100, false},
+                new Object[] {100, 100, false}
+        };
     }
 
     @Test
-    public void testOffine() throws Exception {
+    @Parameters
+    public void testFree(int basePrice, int maxPrice, boolean isFree) {
+        // given
+        Event event = Event.builder()
+                .basePrice(basePrice)
+                .maxPrice(maxPrice)
+                .build();
+
+        // when
+        event.update();
+
+        // then
+        assertThat(event.isFree()).isEqualTo(isFree);
+    }
+
+
+    private Object[] parametersForTestOffine() {
+        return new Object[] {
+                new Object[] {"jeju", true},
+                new Object[] {null, false},
+                new Object[] {"   ", false}
+        };
+    }
+
+    @Test
+    @Parameters
+    public void testOffine(String location, boolean isOffline) {
         //given 테스트 전의 상태
         Event event = Event.builder()
+                .location(location)
                 .build();
 
         //when 테스트 행위
         event.update();
 
         //than 테스트 검증
-        assertThat(event.isOffline()).isFalse();
-
-        //given 테스트 전의 상태
-        event = Event.builder()
-                .location("제주도 어딘가")
-                .build();
-
-        //when 테스트 행위
-        event.update();
-
-        //than 테스트 검증
-        assertThat(event.isOffline()).isTrue();
+        assertThat(event.isOffline()).isEqualTo(isOffline);
     }
 }

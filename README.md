@@ -40,3 +40,7 @@
 - Event 생성시 location이 있으면, offline = true
 - Event 생성시 basePrice, maxPrice가 0이면, isFree = true
 - 간단한 로직은 서비스가 아닌 도메인에 구현, 단위테스트 -> 통합테스트 작성
+
+### Event 생성 API 구현: 매개변수를 이용한 테스트
+- 테스트코드를 리팩토링하는데 중복코드를 없애기 위해 JUnitParams를 사용
+- @Parameters를 사용한 테스트 구현
