@@ -37,4 +37,6 @@
 - 테스트코드는 global error에 대응하도록 수정됨
 
 ### Event 생성 API 구현: 비즈니스 로직 적용
-
+- Event 생성시 location이 있으면, offline = true
+- Event 생성시 basePrice, maxPrice가 0이면, isFree = true
+- 간단한 로직은 서비스가 아닌 도메인에 구현, 단위테스트 -> 통합테스트 작성
