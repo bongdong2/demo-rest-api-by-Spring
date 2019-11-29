@@ -10,7 +10,12 @@ ch3. Spring HATEOAS
 - 링크를 찾아주는 기능 (이 강좌에서는 다루지 않음)
   - Traverson
   - LinkDeiscoverers
-  
-## 참고
-- EventController의 linkTo() 메서드가 스프링 HATEOAS에서 제공하는 링크를 만들어 주는 기능의 일부
+- 링크
+  - HREF : hypermedia reference(uri, url설)
+  - REL : relation 현재 이 리소스와의 관계를 표현
+    - self : 자기 자신에 대한 url을 넣어 줄 때
+    - profile : 응답 본문에 대한 설명을 가지고 있는 문서로 링크를 걸 때
+    - update-event
+    - query-events
+
 
