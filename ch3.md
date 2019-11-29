@@ -18,4 +18,13 @@ ch3. Spring HATEOAS
     - update-event
     - query-events
 
-
+### 스프링 HATEOAS 적용
+- EvnetResource 만들기
+  - extends RepresentationModel 문제 
+    - @JsonUnwrapped로 해결
+    - extends EntityModel<T>로 해결
+- 테스트 할 것
+  - 응답에 HATEOAS와 profile 관련 링크가 있는지 확인
+    - self(view)
+    - update(만든 사람은 수정할 수 있으므로)
+    - events(목록으로 가는 링크)
