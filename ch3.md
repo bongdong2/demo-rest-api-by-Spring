@@ -28,3 +28,29 @@ ch3. Spring HATEOAS
     - self(view)
     - update(만든 사람은 수정할 수 있으므로)
     - events(목록으로 가는 링크)
+
+
+### 스프링 REST Docs 소개
+- 스프링 MVC 테스트를 사용하여 REST API문서의 일부분을 생성하는 유용한 기능을 제공하는 라이브러리
+
+- Spring REST Docs / Swagger 가 있는데 이 강좌에서 Swagger는 다루지 않음
+
+- REST Docs 코딩
+  - andDo(document(“doc-name”, snippets))
+  - snippets
+    - links()
+    - requestParameters() + parameterWithName()
+    - pathParameters() + parametersWithName()
+    - requestParts() + partWithname()
+    - requestPartBody()
+    - requestPartFields()
+    - requestHeaders() + headerWithName()
+    - requestFields() + fieldWithPath()
+    - responseHeaders() + headerWithName()
+    - responseFields() + fieldWithPath()
+    - ...
+  - Relaxed*
+  - Processor
+    - preprocessRequest(prettyPrint())
+    - preprocessResponse(prettyPrint())
+    - ...
