@@ -54,3 +54,17 @@ ch3. Spring HATEOAS
     - preprocessRequest(prettyPrint())
     - preprocessResponse(prettyPrint())
     - ...
+
+### 스프링 REST Docs 적용
+- REST Docs 자동 설정
+  - @AutoConfigureRestDocs
+  
+  
+- 테스트코드에  ' .andDo(document("create-event")) ' 만 추가해도 target/generated-snippets/create-event에 문서가 생김
+  - 이렇게 실행하면 문서가 포맷팅이 되어 있지 않은데 test/java/common/RestDocsConfiguration.class를 만들어서 해결 (prettyPrint())
+
+
+- RestDocMockMvc 커스터마이징
+  - RestDocsMockMvcConfigurationCustomizer 구현한 빈 등록
+  - @TestConfiguration
+ 
