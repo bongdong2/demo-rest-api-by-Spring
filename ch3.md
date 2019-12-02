@@ -88,3 +88,35 @@ ch3. Spring HATEOAS
   fieldWithPath("_link.update-event.href").description("link to update existing event")
   ```
   - 되도록이면 Relaxed 접두어 사용하지 않는 후자의 방법을 추천
+  
+  
+### 스프링 REST Docs: 문서 빌드
+
+- pom.xml  메이븐 플러그인 설정
+
+- 템플릿 파일 추가
+  - src/main/asciidoc/index.adoc
+
+- 문서 생성하기
+  - mvn package
+  - test
+  - prepare-package :: process-asciidoc
+  - prepare-package :: copy-resources
+  
+- 문서 확인
+  - target/classes/me/static/docs/index.html 
+  - Web Server를 띄우고 http://localhost:8080/docs/index.html 에서 확인 가능
+
+- profile 링크 추가
+```java
+class EventController{
+@PostMapping
+    public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+        // .....
+        // .....
+        eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
+        return ResponseEntity.created(createUri).body(eventResource);
+    }
+}
+```
+
