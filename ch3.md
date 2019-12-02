@@ -67,4 +67,24 @@ ch3. Spring HATEOAS
 - RestDocMockMvc 커스터마이징
   - RestDocsMockMvcConfigurationCustomizer 구현한 빈 등록
   - @TestConfiguration
+
  
+### 스프링 REST Docs: 링크, (Req, Res) 필드와 헤더 문서화
+- 요청 필드 문서화
+  - requestFields() + fieldWithPath()
+  - responseFields() + fieldWithPath()
+  - requestHeaders() + headerWithName()
+  - responseHedaers() + headerWithName()
+  - links() + linkWithRel()
+  
+- Relaxed 접두어
+  - 장점: 문서 일부분만 테스트 할 수 있다.
+  - 단점: 정확한 문서를 생성하지 못한다.
+  - 강좌에서는 relaxedResponseFields 사용해서 문서의 일부분만 확인하여 에러 해결
+  - 또는 
+  ```java 
+  fieldWithPath("_link.self.href").description("link to self"),
+  fieldWithPath("_link.query-events.href").description("link to query event list"),
+  fieldWithPath("_link.update-event.href").description("link to update existing event")
+  ```
+  - 되도록이면 Relaxed 접두어 사용하지 않는 후자의 방법을 추천
