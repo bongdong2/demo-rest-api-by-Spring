@@ -120,3 +120,65 @@ class EventController{
 }
 ```
 
+### PostgreSQL 적용
+- test에서는 h2를 사용하고 애플리케이션 서버를 실행할 때에는 postgresql을 사용한다.
+- /scripts.md 참고
+
+1. PostgreSQL 드라이버 의존성 추가
+```xml
+<dependency>
+	<groupId>org.postgresql</groupId>
+	<artifactId>postgresql</artifactId>
+</dependency>
+```
+
+2. 도커로 PostgreSQL 컨테이너 실행
+
+docker run --name rest -p 5432:5432 -e POSTGRES_PASSWORD=pass -d postgres
+
+3. 도커 컨테이너에 들어가보기
+
+docker exec -i -t ndb bash
+su - postgres
+psql -d postgres -U postgres
+\l
+\dt
+
+4. 데이터소스 설정
+
+application.properties
+```properties
+spring.datasource.username=postgres
+spring.datasource.password=pass
+spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+spring.datasource.driver-class-name=org.postgresql.Driver
+```
+
+5. 하이버네이트 설정 
+
+application.properties
+```properties
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+```
+
+애플리케이션 설정과 테스트 설정 중복 어떻게 줄일 것인가?
+프로파일과 @ActiveProfiles 활용
+
+test 디렉토리의 application.properties 이름이 같으면 덮어 씌워버리므로 
+이름을 변경한다. 대신 따로 선언을 해야 한다.
+
+application-test.properties 에는 h2 인메모리 DB로 설정한다.
+```properties
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driver-class-name=org.h2.Driver
+
+spring.datasource.hikari.jdbc-url=jdbc:h2:mem:testdb
+
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+```
