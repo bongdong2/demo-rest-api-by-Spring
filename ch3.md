@@ -190,15 +190,16 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 
 - IndexController.java
 ```java
+@RestController
 public class IndexController {
 
     @GetMapping("/api")
-    public ResourceSupport root() {
-        ResourceSupport index = new ResourceSupport();
+    public RepresentationModel index() {
+        var index = new RepresentationModel<>();
+
         index.add(linkTo(EventController.class).withRel("events"));
         return index;
     }
-
 }
 ```
 
