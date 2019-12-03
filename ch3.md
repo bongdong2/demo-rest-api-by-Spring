@@ -182,3 +182,27 @@ spring.datasource.hikari.jdbc-url=jdbc:h2:mem:testdb
 
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 ```
+
+### 인덱스 핸들러 만들기
+- 인덱스 핸들러
+  - 다른 리소스에 대한 링크 제공
+  - 문서화
+
+- IndexController.java
+```java
+public class IndexController {
+
+    @GetMapping("/api")
+    public ResourceSupport root() {
+        ResourceSupport index = new ResourceSupport();
+        index.add(linkTo(EventController.class).withRel("events"));
+        return index;
+    }
+
+}
+```
+
+- 테스트 컨트롤러 리팩토링
+  - 중복 코드 제거
+- 에러 리소스
+  - 인덱스로 가는 링크 제공
