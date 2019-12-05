@@ -5,3 +5,5 @@
 - Mac OS
 - IntelliJ IDEA
 - open jdk 11 
+
+## 노트 ch2.md, ch3.md, ch4.md, ch5.md  
