@@ -13,3 +13,14 @@ ch4. 이벤 조회 및 수정 REST API 개발
   - page: 0부터 시작
   - size: 기본값 20
   - sort: property,property(,ASC|DESC)
+
+
+### Event 조회 API
+- 조회하는 이벤트가 있는 경우 이벤트 리소스 확인
+  - 링크
+  - self
+  - profile
+  - (update)
+  - 이벤트 데이터
+
+- 조회하는 이벤트가 없는 경우 404 응답 확인 
