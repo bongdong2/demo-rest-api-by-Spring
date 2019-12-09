@@ -1,6 +1,7 @@
 package me.seungui.demorestapi.Events;
 
 import lombok.*;
+import me.seungui.demorestapi.accounts.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,13 +30,12 @@ public class Event  {
     private boolean free;
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
+    @ManyToOne
+    private Account manager;
 
     public void update() {
         // update free
         this.free = this.basePrice == 0 && this.maxPrice == 0;
-
-        // this.offline = this.location != null;
-        // this.offline = !this.location.isBlank(); // java 11 - isBlank()
 
         if(this.location == null || this.location.isBlank()) {
             this.offline = false;
