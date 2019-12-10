@@ -11,7 +11,7 @@ ch3. Spring HATEOAS
   - Traverson
   - LinkDeiscoverers
 - 링크
-  - HREF : hypermedia reference(uri, url설)
+  - HREF : hypermedia reference(uri, url)
   - REL : relation 현재 이 리소스와의 관계를 표현
     - self : 자기 자신에 대한 url을 넣어 줄 때
     - profile : 응답 본문에 대한 설명을 가지고 있는 문서로 링크를 걸 때

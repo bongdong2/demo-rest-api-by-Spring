@@ -1,4 +1,4 @@
-ch4. 이벤 조회 및 수정 REST API 개발
+ch4. 이벤트 조회 및 수정 REST API 개발
 ===================
 
 ### Event 목록 조회 API 구현
@@ -12,7 +12,7 @@ ch4. 이벤 조회 및 수정 REST API 개발
 - 테스트 할 때 Pageable 파라미터 제공하는 방법
   - page: 0부터 시작
   - size: 기본값 20
-  - sort: property,property(,ASC|DESC)
+  - sort: property,property(ASC|DESC)
 
 
 ### Event 조회 API

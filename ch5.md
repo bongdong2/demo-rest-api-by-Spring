@@ -6,7 +6,7 @@ ch5. REST API 보안 적용
   - id
   - email
   - password
-  - roels
+  - roles
 
 - AccountRoles
   - ADMIN, USER
@@ -90,3 +90,85 @@ Account manager;
         accountService.loadUserByUsername(username);
     }
 ```
+
+
+### 스프링 시큐리티 기본 설정
+- 시큐리티 필터를 적용하지 않음...
+  - /docs/index.html
+
+- 로그인 없이 접근 가능
+  - GET /api/events
+  - GET /api/events/{id}
+
+- 로그인 해야 접근 가능
+  - 나머지 다...
+  - POST /api/events
+  - PUT /api/events/{id{
+  - ...
+
+- 스프링 시큐리티 OAuth 2.0
+  - AuthorizationServer: OAuth2 토큰 발행(/oauth/token) 및 토큰 인증(/oauth/authorize)
+     - Oder 0 (리소스 서버 보다 우선 순위가 높다.)
+  - ResourceServer: 리소스 요청 인증 처리 (OAuth 2 토큰 검사)
+     - Oder 3 (이 값은 현재 고칠 수 없음)
+
+- 스프링 시큐리티 설정
+  ```java
+        @Configuration
+        @EnableWebSecurity
+        public class SecurityConfig extends WebSecurityConfigurerAdapter {
+        
+            @Autowired
+            AccountService accountService;
+        
+            @Autowired
+            PasswordEncoder passwordEncoder;
+        
+            @Bean
+            public TokenStore tokenStore() {
+                return new InMemoryTokenStore();
+            }
+        
+            @Bean
+            @Override
+            public AuthenticationManager authenticationManagerBean() throws Exception {
+                return super.authenticationManagerBean();
+            }
+        
+            @Override
+            protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+                auth.userDetailsService(accountService)
+                        .passwordEncoder(passwordEncoder);
+            }
+        
+            @Override
+            public void configure(WebSecurity web) throws Exception {
+                web.ignoring().mvcMatchers("/docs/index.html");
+                web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+            }
+        
+            // 아래 방법 보다 위의 방법이 더 낫다.
+            /*@Override
+            protected void configure(HttpSecurity http) throws Exception {
+                http.authorizeRequests()
+                        .mvcMatchers("/docs/index.html").anonymous()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).anonymous();
+            }*/
+        }
+    ```
+  - @EnableWebSecurity : 스프링부트의 기본설정을 무효화하고 개발자가 만든 설정을 사용한다.
+  - @EnableGlobalMethodSecurity
+  - extends WebSecurityConfigurerAdapter
+  - PasswordEncoder: PasswordEncoderFactories.createDelegatingPassworkEncoder()
+  - TokenStore: InMemoryTokenStore
+  - AuthenticationManagerBean
+  - configure(AuthenticationManagerBuidler auth)
+    - userDetailsService
+    - passwordEncoder
+  - configure(HttpSecurity http)
+    - /docs/**: permitAll
+  - configure(WebSecurty web)
+    - ignore
+        - /docs/**
+        - /favicon.ico
+  - PathRequest.toStaticResources() 사용하기
