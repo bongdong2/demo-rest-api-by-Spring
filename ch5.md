@@ -216,3 +216,126 @@ Account manager;
 - 요청에 인증 적용
     - /api 이하 모든 GET 요청에 인증이 필요함. (permitAll()을 사용하여 인증이 필요없이 익명으로 접근이 가능케 할 수 있음)
     - 그밖에 모은 요청도 인증이 필요함.
+
+
+### 스프링 시큐리티 OAuth 2 설정: 인증 서버 설정
+```
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <version>${spring-security.version}</version>
+    <scope>test</scope>
+</dependency>
+```
+
+```java
+// 설정 테스트
+public class AuthServerConfigTest extends BaseControllerTest {
+
+    @Autowired
+    AccountService accountService;
+
+    @Test
+    @TestDescription("인증 토큰을 발급받는 테스트")
+    public void getAuthToken() throws Exception {
+        // Given
+        String username = "seungui@email.com";
+        String password = "1q2w3e4r";
+        Account seungui = Account.builder()
+                .email(username)
+                .password(password)
+                .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
+                .build();
+        this.accountService.saveAccount(seungui);
+
+        String clientId = "myApp";
+        String clientSecret = "pass";
+
+        this.mockMvc.perform(post("/oauth/token")
+                .with(httpBasic(clientId, clientSecret))
+                .param("username", username)
+                .param("password", password)
+                .param("grant_type", "password")
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("access_token").exists());
+    }
+}
+
+// 설정 클래스
+@Configuration
+@EnableAuthorizationServer
+public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    TokenStore tokenStore;
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.passwordEncoder(passwordEncoder);
+    }
+
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("myApp")
+                .authorizedGrantTypes("password", "refresh_token")
+                .scopes("read", "write")
+                .secret(this.passwordEncoder.encode("pass"))
+                .accessTokenValiditySeconds(10 * 60)
+                .refreshTokenValiditySeconds(6 * 10 * 60);
+    }
+
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints.authenticationManager(authenticationManager)
+                .userDetailsService(accountService)
+                .tokenStore(tokenStore);
+    }
+}
+```
+
+- 토큰 발행 테스트
+  - User
+  - Client
+  - POST /oauth/token
+    - HTTP Basic 인증 헤더 (클라이언트 아이디 + 클라이언트 시크릿)
+    - 요청 매개변수 (MultiValuMap<String, String>)
+        - grant_type: password
+        - username
+        - password
+    - 응답에 access_token 나오는지 확인
+
+- Grant Type: Password
+    - Granty Type: 토큰 받아오는 방법
+    - 서비스 오너가 만든 클라이언트에서 사용하는 Grant Type
+    - https://developer.okta.com/blog/2018/06/29/what-is-the-oauth2-password-grant
+
+- AuthorizationServer 설정
+    - @EnableAuthorizationServer
+    - extends AuthorizationServerConfigurerAdapter
+    - configure(AuthorizationServerSecurityConfigurer security)
+        - PassswordEncode 설정
+    - configure(ClientDetailsServiceConfigurer clients)
+        - 클라이언트 설정
+        - grantTypes
+            - password
+            - refresh_token
+        - scopes
+        - secret / name
+        - accessTokenValiditySeconds
+        - refreshTokenValiditySeconds
+    - AuthorizationServerEndpointsConfigurer
+        - tokenStore
+        - authenticationMaanger
+        - userDetailsService
