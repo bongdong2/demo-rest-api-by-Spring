@@ -339,3 +339,104 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         - tokenStore
         - authenticationMaanger
         - userDetailsService
+        
+ ### 스프링 시큐리티 OAuth 2 설정: 리소스 서버 설정
+ - ResourceServerConfig를 만들고 EventControllerTest 테스트에서 header정보를 추가
+ - 테스트 간에 서로 영향을 주지 않도록 @Before에 DB를 비우기
+ 
+ - 테스트 수정
+    - GET을 제외하고 모두 엑세스 토큰을 가지고 요청 하도록 테스트 수정
+   
+ - ResourceServer 설정
+    - @EnableResourceServer
+    - extends ResourceServerConfigurerAdapter
+    - configure(ResourceServerSecurityConfigurer resources)
+        - 리소스 ID
+    - configure(HttpSecurity http)
+        - anonymous
+        - GET /api/** : permit all
+        - POST /api/**: authenticated
+        - PUT /api/**: authenticated
+        - 에러 처리
+            - accessDeniedHandler(OAuth2AccessDeniedHandler())
+
+```java
+@Configuration
+@EnableResourceServer
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.resourceId("event");
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        http
+                .anonymous()
+                .and()
+                .authorizeRequests()
+                .mvcMatchers(HttpMethod.GET, "/api/**")
+                .anonymous()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler((new OAuth2AccessDeniedHandler()));
+    }
+}
+
+
+public class EventControllerTests extends BaseControllerTest {
+    @Autowired
+        EventRepository eventRepository;
+    
+        @Autowired
+        AccountService accountService;
+    
+        @Autowired
+        AccountRepository accountRepository;
+    
+        // 인메모리 DB이지만 테스트 간에는 공유하므로 서로 영향을 주지 않기 위해 repository를 비워 준다.
+        @Before
+        public void setUp() {
+            this.eventRepository.deleteAll();
+            this.accountRepository.deleteAll();
+        }
+    
+    /* header 추가
+        mockMvc.perform(post("/api/events/")
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken())
+                .contentType(MediaType.APPLICATION_JSON)
+    */
+    private String getBearerToken() throws Exception {
+        return "Bearer " + getAccessToken();
+    }
+
+    public String getAccessToken() throws Exception {
+        // Given
+        String username = "seungui@email.com";
+        String password = "1q2w3e4r";
+        Account seungui = Account.builder()
+                .email(username)
+                .password(password)
+                .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
+                .build();
+        this.accountService.saveAccount(seungui);
+
+        String clientId = "myApp";
+        String clientSecret = "pass";
+
+        ResultActions perform = this.mockMvc.perform(post("/oauth/token")
+                .with(httpBasic(clientId, clientSecret))
+                .param("username", username)
+                .param("password", password)
+                .param("grant_type", "password")
+        );
+
+        var responseBody = perform.andReturn().getResponse().getContentAsString();
+        Jackson2JsonParser parser = new Jackson2JsonParser();
+        return parser.parseMap(responseBody).get("access_token").toString();
+    }
+}
+```
