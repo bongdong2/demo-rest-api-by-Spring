@@ -1,8 +1,10 @@
 package me.seungui.demorestapi.configs;
 
 import me.seungui.demorestapi.accounts.Account;
+import me.seungui.demorestapi.accounts.AccountRepository;
 import me.seungui.demorestapi.accounts.AccountRole;
 import me.seungui.demorestapi.accounts.AccountService;
+import me.seungui.demorestapi.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -33,14 +35,24 @@ public class AppConfig {
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
+
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Account seungui = Account.builder()
-                        .email("seungui@mail.com")
-                        .password("seungui")
+                Account admin = Account.builder()
+                        .email(appProperties.getAdminUsername())
+                        .password(appProperties.getAdminPassword())
                         .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                         .build();
-                accountService.saveAccount(seungui);
+                accountService.saveAccount(admin);
+
+                Account user = Account.builder()
+                        .email(appProperties.getUserUsername())
+                        .password(appProperties.getUserPassword())
+                        .roles(Set.of(AccountRole.USER))
+                        .build();
+                accountService.saveAccount(user);
             }
         };
     }

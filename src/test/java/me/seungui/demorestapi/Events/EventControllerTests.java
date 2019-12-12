@@ -4,6 +4,7 @@ import me.seungui.demorestapi.accounts.Account;
 import me.seungui.demorestapi.accounts.AccountRepository;
 import me.seungui.demorestapi.accounts.AccountRole;
 import me.seungui.demorestapi.accounts.AccountService;
+import me.seungui.demorestapi.common.AppProperties;
 import me.seungui.demorestapi.common.BaseControllerTest;
 import me.seungui.demorestapi.common.TestDescription;
 import org.hamcrest.Matchers;
@@ -40,6 +41,9 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    AppProperties appProperties;
 
     // 인메모리 DB이지만 테스트 간에는 공유하므로 서로 영향을 주지 않기 위해 repository를 비워 준다.
     @Before
@@ -135,22 +139,17 @@ public class EventControllerTests extends BaseControllerTest {
 
     public String getAccessToken() throws Exception {
         // Given
-        String username = "seungui@email.com";
-        String password = "1q2w3e4r";
         Account seungui = Account.builder()
-                .email(username)
-                .password(password)
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
         this.accountService.saveAccount(seungui);
 
-        String clientId = "myApp";
-        String clientSecret = "pass";
-
         ResultActions perform = this.mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))
-                .param("username", username)
-                .param("password", password)
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
                 .param("grant_type", "password")
         );
 

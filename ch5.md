@@ -440,3 +440,20 @@ public class EventControllerTests extends BaseControllerTest {
     }
 }
 ```
+
+### 문자열을 외부 설정으로 빼내기
+1. AppProperties.java 생성
+2. @ConfigurationProperties(prefix = "my-app")
+3. dependency 추가
+4. String 프로퍼티들 추가
+5. Intellij > Build > Build Project 이후에 application.properties에 자동완성가능
+6. prefix 'my-app'으로 프로퍼티 설정
+7. AppConfig와 테스트에 하드코딩된 부분 AppProperties를 주입받아 사용
+
+- 기본 유저 만들기
+    - ApplicationRunner
+    - Admin
+    - User
+
+- 외부 설정으로 기본 유저와 클라이언트 정보 빼내기
+    - @ConfigurationProperties

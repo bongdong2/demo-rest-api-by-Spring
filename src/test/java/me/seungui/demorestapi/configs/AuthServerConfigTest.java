@@ -3,6 +3,7 @@ package me.seungui.demorestapi.configs;
 import me.seungui.demorestapi.accounts.Account;
 import me.seungui.demorestapi.accounts.AccountRole;
 import me.seungui.demorestapi.accounts.AccountService;
+import me.seungui.demorestapi.common.AppProperties;
 import me.seungui.demorestapi.common.BaseControllerTest;
 import me.seungui.demorestapi.common.TestDescription;
 import org.junit.Test;
@@ -22,26 +23,25 @@ public class AuthServerConfigTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppProperties appProperties;
+
     @Test
     @TestDescription("인증 토큰을 발급받는 테스트")
     public void getAuthToken() throws Exception {
         // Given
-        String username = "seungui@email.com";
-        String password = "1q2w3e4r";
-        Account seungui = Account.builder()
-                .email(username)
-                .password(password)
+        // AppConfig.java - ApplicationRunner를 통해 스프링 애플리케이션이 동작할 때 유저를 세팅하므로 이제 이 정보는 필요 없다.
+        /*Account seungui = Account.builder()
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
-        this.accountService.saveAccount(seungui);
-
-        String clientId = "myApp";
-        String clientSecret = "pass";
+        this.accountService.saveAccount(seungui);*/
 
         this.mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))
-                .param("username", username)
-                .param("password", password)
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
                 .param("grant_type", "password")
         )
                 .andDo(print())
